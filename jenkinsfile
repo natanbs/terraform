@@ -50,7 +50,7 @@ pipeline {
 							{
 							try {
 								echo "Setting up Terraform"
-								def tfHome = tool name: 'terraform-0.11.14',
+								def tfHome = tool name: 'terraform-0.12.20',
 													type: 'org.jenkinsci.plugins.terraform.TerraformInstallation'
 													env.PATH = "${tfHome}:${env.PATH}"
 								currentBuild.displayName += "[$AWS_REGION]::[$ACTION]"
