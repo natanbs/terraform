@@ -7,7 +7,7 @@ pipeline {
     node {
         label 'collectors-slave'
     }
-  } 
+  }
 	environment {
 				AWS_DEFAULT_REGION = "${params.AWS_REGION}"
 				PROFILE = "${params.PROFILE}"
@@ -22,18 +22,18 @@ pipeline {
         disableConcurrentBuilds()
   }
 	parameters {
-        
-		choice (name: 'AWS_REGION', 
-				choices: ['eu-central-1','us-west-1', 'us-west-2'], 
+
+		choice (name: 'AWS_REGION',
+				choices: ['eu-central-1','us-west-1', 'us-west-2'],
 				description: 'Pick A regions defaults to eu-central-1')
-		// choice (name: 'COMPONENTS', 
+		// choice (name: 'COMPONENTS',
 		// 		choices: ['ALL', 'INFRA', 'APPS'],
 		// 		description: 'All, Infra for vpc + eks + goodies or apps just for charts')
-		choice (name: 'ACTION', 
+		choice (name: 'ACTION',
 				choices: [ 'plan', 'apply', 'show', 'all'],
 				description: 'Optional. terraform show / apply (perform changes) / plan (show diff) defaults to show')
-		string (name: 'PROFILE', 
-			   defaultValue: 'tikal', 
+		string (name: 'PROFILE',
+			   defaultValue: 'tikal',
 			   description: 'Optional. Target aws profile defaults to cyberx')
     }
 	stages {
@@ -42,15 +42,15 @@ pipeline {
 				script {
 					wrap([$class: 'AnsiColorBuildWrapper', colorMapName: 'xterm']) {
 						withCredentials([
-							[ $class: 'AmazonWebServicesCredentialsBinding', 
+							[ $class: 'AmazonWebServicesCredentialsBinding',
 								accessKeyVariable: 'AWS_ACCESS_KEY_ID',
 								secretKeyVariable: 'AWS_SECRET_ACCESS_KEY',
 								credentialsId: 'larobot-aws-credentials',
-								]]) 
+								]])
 							{
 							try {
 								echo "Setting up Terraform"
-								def tfHome = tool name: 'terraform-0.11.14', 
+								def tfHome = tool name: 'terraform-0.11.14',
 													type: 'org.jenkinsci.plugins.terraform.TerraformInstallation'
 													env.PATH = "${tfHome}:${env.PATH}"
 								currentBuild.displayName += "[$AWS_REGION]::[$ACTION]"
@@ -64,6 +64,7 @@ pipeline {
 								""")
 								tfCmd('version')
 							} catch (ex) {
+                echo 'Err: Incremental Build failed with Error: ' + ex.toString()
 								currentBuild.result = "UNSTABLE"
 							}
 						}
@@ -77,11 +78,11 @@ pipeline {
 					script {
 						wrap([$class: 'AnsiColorBuildWrapper', colorMapName: 'xterm']) {
 							withCredentials([
-								[ $class: 'AmazonWebServicesCredentialsBinding', 
+								[ $class: 'AmazonWebServicesCredentialsBinding',
 									accessKeyVariable: 'AWS_ACCESS_KEY_ID',
 									secretKeyVariable: 'AWS_SECRET_ACCESS_KEY',
 									credentialsId: 'larobot-aws-credentials',
-									]]) 
+									]])
 								{
 								try {
 									tfCmd('init')
@@ -95,18 +96,18 @@ pipeline {
 			}
 		}
 		stage('terraform show current state') {
-			when { anyOf { environment name: 'ACTION', value: 'all'; 
+			when { anyOf { environment name: 'ACTION', value: 'all';
 						   environment name: 'ACTION', value: 'show'} }
 			steps {
 				dir("${PROJECT_DIR}") {
 					script {
 						wrap([$class: 'AnsiColorBuildWrapper', colorMapName: 'xterm']) {
 							withCredentials([
-								[ $class: 'AmazonWebServicesCredentialsBinding', 
+								[ $class: 'AmazonWebServicesCredentialsBinding',
 									accessKeyVariable: 'AWS_ACCESS_KEY_ID',
 									secretKeyVariable: 'AWS_SECRET_ACCESS_KEY',
 									credentialsId: 'larobot-aws-credentials',
-									]]) 
+									]])
 								{
 								try {
 									tfCmd('show')
@@ -120,23 +121,23 @@ pipeline {
 			}
 		}
 		stage('terraform plan') {
-			when { anyOf 
-					{  
-						environment name: 'ACTION', value: 'all'; 
-						environment name: 'ACTION', value: 'plan'; 
+			when { anyOf
+					{
+						environment name: 'ACTION', value: 'all';
+						environment name: 'ACTION', value: 'plan';
 						environment name: 'ACTION', value: 'apply'
-					} 
+					}
 				}
 			steps {
 				dir("${PROJECT_DIR}") {
 					script {
 						wrap([$class: 'AnsiColorBuildWrapper', colorMapName: 'xterm']) {
 							withCredentials([
-								[ $class: 'AmazonWebServicesCredentialsBinding', 
+								[ $class: 'AmazonWebServicesCredentialsBinding',
 									accessKeyVariable: 'AWS_ACCESS_KEY_ID',
 									secretKeyVariable: 'AWS_SECRET_ACCESS_KEY',
 									credentialsId: 'larobot-aws-credentials',
-									]]) 
+									]])
 								{
 								try {
 									tfCmd('plan', '-detailed-exitcode -out=tfplan && echo $?')
@@ -156,22 +157,22 @@ pipeline {
 			}
 		}
 		stage('terraform apply') {
-			when { anyOf 
-					{  
-						environment name: 'ACTION', value: 'all'; 
+			when { anyOf
+					{
+						environment name: 'ACTION', value: 'all';
 						environment name: 'ACTION', value: 'apply'
-					} 
+					}
 				}
 			steps {
 				dir("${PROJECT_DIR}") {
 					script {
 						wrap([$class: 'AnsiColorBuildWrapper', colorMapName: 'xterm']) {
 							withCredentials([
-								[ $class: 'AmazonWebServicesCredentialsBinding', 
+								[ $class: 'AmazonWebServicesCredentialsBinding',
 									accessKeyVariable: 'AWS_ACCESS_KEY_ID',
 									secretKeyVariable: 'AWS_SECRET_ACCESS_KEY',
 									credentialsId: 'larobot-aws-credentials',
-									]]) 
+									]])
 								{
 								try {
 									tfCmd('apply', 'tfplan')
