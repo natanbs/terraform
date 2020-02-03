@@ -1,0 +1,33 @@
+profile                 = "tikal"
+vendor_name             = "tikal"
+region                  = "eu-central-1"
+bucket                  = "cx-terraform-state"
+primary_domain          = "tikal.io"
+dynamodb_table          = "NatanTerraformStatelock"
+env                     = "tf-dev"
+instance_count          = 1
+key_name                = "client-key1"
+chronos_instance_type   = "t2.micro"
+chronos_ami_id          = "ami-0cc0a36f626a4fdf5"
+sisense_instance_type   = "t2.micro"
+sisense_ami_id          = "ami-0cc0a36f626a4fdf5"
+db_engine               = "mariadb"
+db_version              = "10.2.21"
+db_name                 = "terraform"
+db_family               = "mariadb10.2"
+db_major_engine_version = "10.2"
+db_instance_type        = "db.m5.large"
+db_user                 = "cyberx"
+cluster_version         = "1.14"
+vpc_cidr_block          = "10.0.58.0/23"
+profiling_vpc_id        = "vpc-076d4aa84edf987e1"
+profiling_vpc_cdir      = "10.16.0.0/16"
+operators = [
+  "natanb",
+]
+WORKSPACE                  = "."
+lb-description             = "Load Balancer"
+deletion_protection        = false
+backup_retention_period    = "0"
+apply_immediately          = true
+server_audit_file_rotation = "0"

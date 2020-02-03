@@ -1,0 +1,218 @@
+def tfCmd(String command, String options = '') {
+    sh ( script: "export AWS_PROFILE=${PROFILE} && export TF_ENV_profile=${PROFILE} && terraform ${command} ${options}", returnStatus: true)
+}
+
+pipeline {
+	agent {
+    node {
+        label 'collectors-slave'
+    }
+  } 
+	environment {
+				AWS_DEFAULT_REGION = "${params.AWS_REGION}"
+				PROFILE = "${params.PROFILE}"
+				ACTION = "${params.ACTION}"
+				PROJECT_DIR = "terraform/eu/main"
+				// COMPONENTS = "${params.COMPONENTS}"
+  }
+	options {
+        buildDiscarder(logRotator(numToKeepStr: '30'))
+        timestamps()
+        timeout(time: 30, unit: 'MINUTES')
+        disableConcurrentBuilds()
+  }
+	parameters {
+        
+		choice (name: 'AWS_REGION', 
+				choices: ['eu-central-1','us-west-1', 'us-west-2'], 
+				description: 'Pick A regions defaults to eu-central-1')
+		// choice (name: 'COMPONENTS', 
+		// 		choices: ['ALL', 'INFRA', 'APPS'],
+		// 		description: 'All, Infra for vpc + eks + goodies or apps just for charts')
+		choice (name: 'ACTION', 
+				choices: [ 'plan', 'apply', 'show', 'all'],
+				description: 'Optional. terraform show / apply (perform changes) / plan (show diff) defaults to show')
+		string (name: 'PROFILE', 
+			   defaultValue: 'CyberX', 
+			   description: 'Optional. Target aws profile defaults to cyberx')
+    }
+	stages {
+		stage('Checkout & Environment Prep'){
+			steps {
+				script {
+					wrap([$class: 'AnsiColorBuildWrapper', colorMapName: 'xterm']) {
+						withCredentials([
+							[ $class: 'AmazonWebServicesCredentialsBinding', 
+								accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+								secretKeyVariable: 'AWS_SECRET_ACCESS_KEY',
+								credentialsId: 'larobot-aws-credentials',
+								]]) 
+							{
+							try {
+								echo "Setting up Terraform"
+								def tfHome = tool name: 'terraform-0.11.14', 
+													type: 'org.jenkinsci.plugins.terraform.TerraformInstallation'
+													env.PATH = "${tfHome}:${env.PATH}"
+								currentBuild.displayName += "[$AWS_REGION]::[$ACTION]"
+								sh("""
+								aws configure --profile ${PROFILE} set aws_access_key_id ${AWS_ACCESS_KEY_ID}
+								aws configure --profile ${PROFILE} set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}
+								aws configure --profile ${PROFILE} set region ${AWS_REGION}
+								export AWS_PROFILE=${PROFILE}
+								export TF_ENV_profile=${PROFILE}
+								mkdir -p /home/jenkins/.terraform.d/plugins/linux_amd64
+								""")
+								tfCmd('version')
+							} catch (ex) {
+								currentBuild.result = "UNSTABLE"
+							}
+						}
+					}
+				}
+			}
+		}
+		stage('terraform init') {
+			steps {
+				dir("${PROJECT_DIR}") {
+					script {
+						wrap([$class: 'AnsiColorBuildWrapper', colorMapName: 'xterm']) {
+							withCredentials([
+								[ $class: 'AmazonWebServicesCredentialsBinding', 
+									accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+									secretKeyVariable: 'AWS_SECRET_ACCESS_KEY',
+									credentialsId: 'larobot-aws-credentials',
+									]]) 
+								{
+								try {
+									tfCmd('init')
+								} catch (ex) {
+									currentBuild.result = "UNSTABLE"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		stage('terraform show current state') {
+			when { anyOf { environment name: 'ACTION', value: 'all'; 
+						   environment name: 'ACTION', value: 'show'} }
+			steps {
+				dir("${PROJECT_DIR}") {
+					script {
+						wrap([$class: 'AnsiColorBuildWrapper', colorMapName: 'xterm']) {
+							withCredentials([
+								[ $class: 'AmazonWebServicesCredentialsBinding', 
+									accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+									secretKeyVariable: 'AWS_SECRET_ACCESS_KEY',
+									credentialsId: 'larobot-aws-credentials',
+									]]) 
+								{
+								try {
+									tfCmd('show')
+								} catch (ex) {
+                                    currentBuild.result = "UNSTABLE"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		stage('terraform plan') {
+			when { anyOf 
+					{  
+						environment name: 'ACTION', value: 'all'; 
+						environment name: 'ACTION', value: 'plan'; 
+						environment name: 'ACTION', value: 'apply'
+					} 
+				}
+			steps {
+				dir("${PROJECT_DIR}") {
+					script {
+						wrap([$class: 'AnsiColorBuildWrapper', colorMapName: 'xterm']) {
+							withCredentials([
+								[ $class: 'AmazonWebServicesCredentialsBinding', 
+									accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+									secretKeyVariable: 'AWS_SECRET_ACCESS_KEY',
+									credentialsId: 'larobot-aws-credentials',
+									]]) 
+								{
+								try {
+									tfCmd('plan', '-detailed-exitcode -out=tfplan && echo $?')
+								} catch (ex) {
+									if (ex == 2 && "${ACTION}" == 'apply') {
+										currentBuild.result = "UNSTABLE"
+									} else if (ex == 2 && "${ACTION}" == 'plan') {
+										echo "Update found in plan tfplan"
+									} else {
+										echo "Try running terraform again in debug mode"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		stage('terraform apply') {
+			when { anyOf 
+					{  
+						environment name: 'ACTION', value: 'all'; 
+						environment name: 'ACTION', value: 'apply'
+					} 
+				}
+			steps {
+				dir("${PROJECT_DIR}") {
+					script {
+						wrap([$class: 'AnsiColorBuildWrapper', colorMapName: 'xterm']) {
+							withCredentials([
+								[ $class: 'AmazonWebServicesCredentialsBinding', 
+									accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+									secretKeyVariable: 'AWS_SECRET_ACCESS_KEY',
+									credentialsId: 'larobot-aws-credentials',
+									]]) 
+								{
+								try {
+									tfCmd('apply', 'tfplan')
+								} catch (ex) {
+                  currentBuild.result = "UNSTABLE"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+  	}
+  post
+    {
+        // success
+        // {
+        //   slackSend (color: '#00FF00', message: "SUCCESSFUL: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+        // }
+        // failure
+        // {
+        //   slackSend (color: '#FF0000', message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+        // }
+		    always
+        {
+        emailext (
+        body: """
+            <p>Jenkins Pipeline Summary</p>
+            <p>Jenkins url: <a href='${env.BUILD_URL}/>link</a></p>
+            <p>Pipeline Blueocean： <a href='${env.JENKINS_URL}blue/organizations/jenkins/${env.JOB_NAME}/detail/${env.JOB_NAME}/${env.BUILD_NUMBER}/pipeline'>${env.JOB_NAME}(pipeline page)</a></p>
+            <ul>
+              <li> Branch built: '${env.BRANCH_NAME}' </li>
+              <li> ACTION: $ACTION</li>
+              <li> REGION: ${AWS_REGION}</li>
+            </ul>
+            """,
+			recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
+            // to: "yaron.lavi@lightapp.com",
+            subject: "${env.JOB_NAME}-${env.BUILD_NUMBER} [$ACTION][$AWS_REGION]",
+            attachLog: true
+            )
+        }
+    }
+}
