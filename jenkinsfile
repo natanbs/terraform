@@ -64,7 +64,7 @@ pipeline {
 								""")
 								tfCmd('version')
 							} catch (ex) {
-                echo 'Err: Incremental Build failed with Error: ' + ex.toString()
+                                echo 'Err: Incremental Build failed with Error: ' + ex.toString()
 								currentBuild.result = "UNSTABLE"
 							}
 						}
