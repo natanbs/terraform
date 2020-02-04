@@ -9,7 +9,7 @@ pipeline {
 				AWS_DEFAULT_REGION = "${params.AWS_REGION}"
 				PROFILE = "${params.PROFILE}"
 				ACTION = "${params.ACTION}"
-				PROJECT_DIR = "terraform/eu/main"
+				PROJECT_DIR = "terraform/main"
 				// COMPONENTS = "${params.COMPONENTS}"
   }
 	options {
