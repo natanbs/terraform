@@ -69,6 +69,29 @@ pipeline {
 				}
 			}
 		}
+		stage('terraform destroy') {
+			steps {
+				dir("${PROJECT_DIR}") {
+					script {
+						wrap([$class: 'AnsiColorBuildWrapper', colorMapName: 'xterm']) {
+							withCredentials([
+								[ $class: 'AmazonWebServicesCredentialsBinding',
+									accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+									secretKeyVariable: 'AWS_SECRET_ACCESS_KEY',
+									credentialsId: 'larobot-aws-credentials',
+									]])
+								{
+								try {
+									tfCmd('destroy', '-auto-approve -lock=false')
+								} catch (ex) {
+									currentBuild.result = "UNSTABLE"
+								}
+							}
+						}
+					}
+				}
+			}
+		}		
 		stage('terraform init') {
 			steps {
 				dir("${PROJECT_DIR}") {
@@ -175,29 +198,6 @@ pipeline {
 									tfCmd('apply', '-lock=false tfplan')
 								} catch (ex) {
                   currentBuild.result = "UNSTABLE"
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		stage('terraform destroy') {
-			steps {
-				dir("${PROJECT_DIR}") {
-					script {
-						wrap([$class: 'AnsiColorBuildWrapper', colorMapName: 'xterm']) {
-							withCredentials([
-								[ $class: 'AmazonWebServicesCredentialsBinding',
-									accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-									secretKeyVariable: 'AWS_SECRET_ACCESS_KEY',
-									credentialsId: 'larobot-aws-credentials',
-									]])
-								{
-								try {
-									tfCmd('destroy', '-lock=false')
-								} catch (ex) {
-									currentBuild.result = "UNSTABLE"
 								}
 							}
 						}
