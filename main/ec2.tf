@@ -4,7 +4,7 @@
 module "keypair" {
   source = "mitchellh/dynamic-keys/aws"
   name   = "var.key_name"
-  path   = "${path.root}/keys"
+  path   = "${path.root}/../keys"
 }
 
 output "private_key_pem" {
