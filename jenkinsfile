@@ -195,7 +195,7 @@ pipeline {
         // }
 	    always
 
-	stage('email'){
+	{
         emailext (
         body: """
             <p>Jenkins Pipeline ${ACTION} Summary</p>
