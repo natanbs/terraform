@@ -27,7 +27,7 @@ pipeline {
 		// 		choices: ['ALL', 'INFRA', 'APPS'],
 		// 		description: 'All, Infra for vpc + eks + goodies or apps just for charts')
 		choice (name: 'ACTION',
-				choices: [ 'plan', 'apply', 'show', 'all'],
+				choices: [ 'plan', 'apply', 'show', 'all', 'destroy'],
 				description: 'Optional. terraform show / apply (perform changes) / plan (show diff) defaults to show')
 		string (name: 'PROFILE',
 			   defaultValue: 'tikal',
