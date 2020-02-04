@@ -92,6 +92,31 @@ pipeline {
 				}
 			}
 		}
+		stage('terraform show current state') {
+			when { anyOf { environment name: 'ACTION', value: 'all';
+						   environment name: 'ACTION', value: 'show'} }
+			steps {
+				dir("${PROJECT_DIR}") {
+					script {
+						wrap([$class: 'AnsiColorBuildWrapper', colorMapName: 'xterm']) {
+							withCredentials([
+								[ $class: 'AmazonWebServicesCredentialsBinding',
+									accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+									secretKeyVariable: 'AWS_SECRET_ACCESS_KEY',
+									credentialsId: 'larobot-aws-credentials',
+									]])
+								{
+								try {
+									tfCmd('show')
+								} catch (ex) {
+                                    currentBuild.result = "UNSTABLE"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 		stage('terraform plan') {
 			when { anyOf
 					{
@@ -150,31 +175,6 @@ pipeline {
 									tfCmd('apply', '-lock=false tfplan')
 								} catch (ex) {
                   currentBuild.result = "UNSTABLE"
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-			stage('terraform show current state') {
-				when { anyOf { environment name: 'ACTION', value: 'all';
-						   environment name: 'ACTION', value: 'show'} }
-			steps {
-				dir("${PROJECT_DIR}") {
-					script {
-						wrap([$class: 'AnsiColorBuildWrapper', colorMapName: 'xterm']) {
-							withCredentials([
-								[ $class: 'AmazonWebServicesCredentialsBinding',
-									accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-									secretKeyVariable: 'AWS_SECRET_ACCESS_KEY',
-									credentialsId: 'larobot-aws-credentials',
-									]])
-								{
-								try {
-									tfCmd('show')
-								} catch (ex) {
-                                    currentBuild.result = "UNSTABLE"
 								}
 							}
 						}
