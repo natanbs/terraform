@@ -1,5 +1,6 @@
 def tfCmd(String command, String options = '') {
-    sh ( script: "cd $WORKSPACE/main && pwd && export AWS_PROFILE=${PROFILE} && export TF_ENV_profile=${PROFILE} && terraform ${command} ${options}", returnStatus: true)
+    sh ( script: "cd $WORKSPACE/main && export AWS_PROFILE=${PROFILE} && export TF_ENV_profile=${PROFILE} && terraform ${command} ${options}", returnStatus: true)
+	notify(${ACTION})
 }
 
 pipeline {
@@ -194,10 +195,11 @@ pipeline {
         //   slackSend (color: '#FF0000', message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
         // }
 		    always
+		def notify(status)
         {
         emailext (
         body: """
-            <p>Jenkins Pipeline Summary</p>
+            <p>Jenkins Pipeline ${ACTION} Summary</p>
             <p>Jenkins url: <a href='${env.BUILD_URL}/>link</a></p>
             <p>Pipeline Blueocean： <a href='${env.JENKINS_URL}blue/organizations/jenkins/${env.JOB_NAME}/detail/${env.JOB_NAME}/${env.BUILD_NUMBER}/pipeline'>${env.JOB_NAME}(pipeline page)</a></p>
             <ul>
