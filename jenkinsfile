@@ -182,7 +182,7 @@ pipeline {
 				}
 			}
 		}
-				stage('terraform destroy') {
+		stage('terraform destroy') {
 			steps {
 				dir("${PROJECT_DIR}") {
 					script {
