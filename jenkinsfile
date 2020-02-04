@@ -182,6 +182,29 @@ pipeline {
 				}
 			}
 		}
+				stage('terraform destroy') {
+			steps {
+				dir("${PROJECT_DIR}") {
+					script {
+						wrap([$class: 'AnsiColorBuildWrapper', colorMapName: 'xterm']) {
+							withCredentials([
+								[ $class: 'AmazonWebServicesCredentialsBinding',
+									accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+									secretKeyVariable: 'AWS_SECRET_ACCESS_KEY',
+									credentialsId: 'larobot-aws-credentials',
+									]])
+								{
+								try {
+									tfCmd('destroy', '-lock=false')
+								} catch (ex) {
+									currentBuild.result = "UNSTABLE"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
   	}
   post
     {
