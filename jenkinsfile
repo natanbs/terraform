@@ -3,7 +3,7 @@ def tfCmd(String command, String options = '') {
 }
 
 pipeline {
-  agent { label 'collectors-slave' }
+  agent { node { label 'collectors-slave' } }
 //  agent {
 //    node { label 'collectors-slave' }
 //  }
