@@ -32,6 +32,9 @@ pipeline {
 		string (name: 'PROFILE',
 			   defaultValue: 'tikal',
 			   description: 'Optional. Target aws profile defaults to cyberx')
+		string (name: 'ENV',
+			   defaultValue: 'tf-dev',
+			   description: 'Optional. Customer name')
     }
 	stages {
 		stage('Checkout & Environment Prep'){
@@ -172,7 +175,7 @@ pipeline {
 									]])
 								{
 								try {
-									tfCmd('apply', '-lock=false tfplan')
+									tfCmd('apply', "-var env=${ENV} -lock=false tfplan")
 								} catch (ex) {
                   currentBuild.result = "UNSTABLE"
 								}
