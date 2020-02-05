@@ -123,7 +123,7 @@ pipeline {
 									]])
 								{
 								try {
-									tfCmd('plan', '-var env=${ENV} -lock=false -detailed-exitcode -out=tfplan && echo $?')
+									tfCmd('plan', '-lock=false -detailed-exitcode -out=tfplan && echo $?')
 								} catch (ex) {
 									if (ex == 2 && "${ACTION}" == 'apply') {
 										currentBuild.result = "UNSTABLE"
