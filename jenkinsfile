@@ -231,7 +231,7 @@ pipeline {
     {
 		
         always{	
-			echo '`deleting workspace'
+			echo 'deleting workspace'
 			cleanWs { // Clean .terraform
  			includePattern('**/.terraform')
  			deleteDirectories()
