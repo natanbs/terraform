@@ -232,7 +232,7 @@ pipeline {
 		
         always{
 			echo 'deleting workspace'
-			dir('cx-terraform/main/.terraform') {
+			dir('"${env.WORKSPACE}/**/.terraform/") {
     		deleteDir()
 			}	
 			// cleanWs { // Clean .terraform
