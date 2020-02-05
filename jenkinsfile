@@ -169,7 +169,9 @@ pipeline {
 			}
 		}
 		stage('terraform destroy'){
-			input "Destroy?"
+			input {
+        		message "Destroy?!?"
+      		}
 
 			when { anyOf
 					{
