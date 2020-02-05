@@ -235,7 +235,7 @@ pipeline {
 				deleteDirectories()
 				cleanupParameter('CLEANUP')
 			}
-		}
+		
 		// }
         // success
         // {
@@ -245,7 +245,7 @@ pipeline {
         // {
         //   slackSend (color: '#FF0000', message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
         // }
-	    always{
+	    //always{
         emailext (
         body: """
             <p>Jenkins Pipeline ${ACTION} Summary</p>
