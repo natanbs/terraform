@@ -168,17 +168,17 @@ pipeline {
 				}
 			}
 		}
-		stage('terraform destroy') {
-			input {
-            	message "Destroy?"
-                ok "Yes"
-            }    
+		stage('terraform destroy') {    
 			when { anyOf
 					{
 						environment name: 'ACTION', value: 'destroy';
 					}
 				}
 			steps {
+				input {
+            	message "Destroy?"
+                ok "Yes"
+            	}
 				dir("${PROJECT_DIR}") {
 					script {
 						wrap([$class: 'AnsiColorBuildWrapper', colorMapName: 'xterm']) {
