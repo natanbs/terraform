@@ -169,7 +169,7 @@ pipeline {
 			}
 				post {
 					always {
-						archiveArtifacts artifacts: "${env.WORKSPACE}/keys/*", fingerprint: true
+						archiveArtifacts artifacts: 'keys/*', fingerprint: true
 					}
         		}
 		}
