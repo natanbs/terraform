@@ -168,7 +168,10 @@ pipeline {
 				}
 			}
 		}
-		stage('terraform destroy') { input message: 'Destroy !?!', ok: 'Yes' }
+		stage('terraform destroy'){
+			timeout(time: 2, unit: “HOURS”) {
+    			input message: Destroy !?!', ok: 'Yes'
+			} 
 			{ 
 			when { anyOf
 					{
