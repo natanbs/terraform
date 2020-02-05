@@ -229,12 +229,15 @@ pipeline {
   	}
   post
     {
+		
         always{	
-			cleanWs { // Clean workspace when done
-				includePattern('**/.terraform')
-				deleteDirectories()
-				cleanupParameter('CLEANUP')
-			}
+			echo '`deleting workspace'
+            deleteDir() /* clean up our workspace */
+			// cleanWs { // Clean workspace when done
+			// 	includePattern('**/.terraform')
+			// 	deleteDirectories()
+			// 	cleanupParameter('CLEANUP')
+			// }
 		
 		// }
 			// success
