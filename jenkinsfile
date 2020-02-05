@@ -27,7 +27,7 @@ pipeline {
 		// 		choices: ['ALL', 'INFRA', 'APPS'],
 		// 		description: 'All, Infra for vpc + eks + goodies or apps just for charts')
 		choice (name: 'ACTION',
-				choices: [ 'plan', 'apply', 'show', 'all', 'destroy'],
+				choices: [ 'plan', 'apply', 'all', 'destroy', 'show'],
 				description: 'Optional. terraform show / apply (perform changes) / plan (show diff) defaults to show')
 		string (name: 'PROFILE',
 			   defaultValue: 'tikal',
@@ -102,31 +102,6 @@ pipeline {
 				}
 			}
 		}
-		stage('terraform show current state') {
-			when { anyOf { environment name: 'ACTION', value: 'all';
-				       environment name: 'ACTION', value: 'show'} }
-			steps {
-				dir("${PROJECT_DIR}") {
-					script {
-						wrap([$class: 'AnsiColorBuildWrapper', colorMapName: 'xterm']) {
-							withCredentials([
-								[ $class: 'AmazonWebServicesCredentialsBinding',
-									accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-									secretKeyVariable: 'AWS_SECRET_ACCESS_KEY',
-									credentialsId: 'larobot-aws-credentials',
-									]])
-								{
-								try {
-									tfCmd('show')
-								} catch (ex) {
-                                    currentBuild.result = "UNSTABLE"
-								}
-							}
-						}
-					}
-				}
-			}
-		}
 		stage('terraform plan') {
 			when { anyOf
 					{
@@ -182,7 +157,7 @@ pipeline {
 									]])
 								{
 								try {
-									tfCmd('apply', "-var env=${ENV} -lock=false tfplan")
+									tfCmd('apply', '-var env=${ENV} -lock=false tfplan')
 								} catch (ex) {
                   currentBuild.result = "UNSTABLE"
 								}
@@ -213,6 +188,31 @@ pipeline {
 									tfCmd('destroy', '-auto-approve -lock=false')
 								} catch (ex) {
 									currentBuild.result = "UNSTABLE"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		stage('terraform show current state') {
+			when { anyOf { environment name: 'ACTION', value: 'all';
+				       environment name: 'ACTION', value: 'show'} }
+			steps {
+				dir("${PROJECT_DIR}") {
+					script {
+						wrap([$class: 'AnsiColorBuildWrapper', colorMapName: 'xterm']) {
+							withCredentials([
+								[ $class: 'AmazonWebServicesCredentialsBinding',
+									accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+									secretKeyVariable: 'AWS_SECRET_ACCESS_KEY',
+									credentialsId: 'larobot-aws-credentials',
+									]])
+								{
+								try {
+									tfCmd('show')
+								} catch (ex) {
+                                    currentBuild.result = "UNSTABLE"
 								}
 							}
 						}
