@@ -73,6 +73,13 @@ pipeline {
 			}
 		}		
 		stage('terraform init') {
+			when { anyOf
+					{
+						environment name: 'ACTION', value: 'all';
+						environment name: 'ACTION', value: 'plan';
+						environment name: 'ACTION', value: 'apply'
+					}
+				}
 			steps {
 				dir("${PROJECT_DIR}") {
 					script {
