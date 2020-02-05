@@ -167,12 +167,11 @@ pipeline {
 					}
 				}
 			}
-			post {
-				always {
-					archiveArtifacts artifacts: 'cx-terraform/keys/*.key', fingerprint: true
-				}
-        }
-    }
+				post {
+					always {
+						archiveArtifacts artifacts: 'cx-terraform/keys/*', fingerprint: true
+					}
+        		}
 		}
 		stage('terraform destroy') {    
 			when { anyOf
