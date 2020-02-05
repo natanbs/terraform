@@ -172,7 +172,6 @@ pipeline {
 			timeout(time: 2, unit: “HOURS”) {
 				input message: 'Destroy !?!', ok: 'Yes'
 				}
-			{
 			when { anyOf
 					{
 						environment name: 'ACTION', value: 'destroy';
