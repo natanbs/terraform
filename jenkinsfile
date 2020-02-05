@@ -235,14 +235,7 @@ pipeline {
 			dir("${env.WORKSPACE}/main/.terraform/") {
     		deleteDir()
 			}	
-			// cleanWs { // Clean .terraform
- 			// includePattern('**/.terraform')
- 			// deleteDirectories()
-			// cleanupParameter('CLEANUP')
-            //deleteDir() /* clean up our workspace */
-			
-		
-		// }
+
 			// success
 			// {
 			//   slackSend (color: '#00FF00', message: "SUCCESSFUL: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
@@ -252,22 +245,22 @@ pipeline {
 			//   slackSend (color: '#FF0000', message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
 			// }
 	    //always{
-			emailext (
-			body: """
-				<p>Jenkins Pipeline ${ACTION} Summary</p>
-				<p>Jenkins url: <a href='${env.BUILD_URL}/>link</a></p>
-				<p>Pipeline Blueocean： <a href='${env.JENKINS_URL}blue/organizations/jenkins/${env.JOB_NAME}/detail/${env.JOB_NAME}/${env.BUILD_NUMBER}/pipeline'>${env.JOB_NAME}(pipeline page)</a></p>
-				<ul>
-				<li> Branch built: '${env.BRANCH_NAME}' </li>
-				<li> ACTION: $ACTION</li>
-				<li> REGION: ${AWS_REGION}</li>
-				</ul>
-				""",
-				recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
-				to: "natanb@tikalk.com",
-				subject: "${env.JOB_NAME}-${env.BUILD_NUMBER} [$ACTION][$AWS_REGION]",
-				attachLog: true
-				)
+			// emailext (
+			// body: """
+			// 	<p>Jenkins Pipeline ${ACTION} Summary</p>
+			// 	<p>Jenkins url: <a href='${env.BUILD_URL}/>link</a></p>
+			// 	<p>Pipeline Blueocean： <a href='${env.JENKINS_URL}blue/organizations/jenkins/${env.JOB_NAME}/detail/${env.JOB_NAME}/${env.BUILD_NUMBER}/pipeline'>${env.JOB_NAME}(pipeline page)</a></p>
+			// 	<ul>
+			// 	<li> Branch built: '${env.BRANCH_NAME}' </li>
+			// 	<li> ACTION: $ACTION</li>
+			// 	<li> REGION: ${AWS_REGION}</li>
+			// 	</ul>
+			// 	""",
+			// 	recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
+			// 	to: "natanb@tikalk.com",
+			// 	subject: "${env.JOB_NAME}-${env.BUILD_NUMBER} [$ACTION][$AWS_REGION]",
+			// 	attachLog: true
+			// 	)
         }
     }
 }
