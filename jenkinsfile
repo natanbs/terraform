@@ -75,9 +75,10 @@ pipeline {
 		stage('terraform init') {
 			when { anyOf
 					{
-						environment name: 'ACTION', value: 'all';
+						//environment name: 'ACTION', value: 'all';
 						environment name: 'ACTION', value: 'plan';
-						environment name: 'ACTION', value: 'apply'
+						//environment name: 'ACTION', value: 'apply';
+						environment name: 'ACTION', value: 'destroy';
 					}
 				}
 			steps {
@@ -168,6 +169,8 @@ pipeline {
 			}
 		}
 		stage('terraform destroy') {
+			input message: ‘~Destroy !?!’, ok: ‘Yes’
+		    } 
 			when { anyOf
 					{
 						environment name: 'ACTION', value: 'destroy';
@@ -223,6 +226,12 @@ pipeline {
   	}
   post
     {
+        always{	
+		cleanWs { // Clean workspace when done
+			includePattern('**/.terraform')
+            deleteDirectories()
+            cleanupParameter('CLEANUP')
+		}
         // success
         // {
         //   slackSend (color: '#00FF00', message: "SUCCESSFUL: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
@@ -231,9 +240,7 @@ pipeline {
         // {
         //   slackSend (color: '#FF0000', message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
         // }
-	    always
-
-	    {
+	    always{
         emailext (
         body: """
             <p>Jenkins Pipeline ${ACTION} Summary</p>
