@@ -169,7 +169,9 @@ pipeline {
 			}
 		}
 		stage('terraform destroy'){
-			{input message: 'Destroy?', ok: 'Yes'}
+			timeout(time: 1, unit: 'HOURS') {
+      			input 'Destroy?'
+    		}
 			when { anyOf
 					{
 						environment name: 'ACTION', value: 'destroy';
