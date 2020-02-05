@@ -179,10 +179,10 @@ pipeline {
 						environment name: 'ACTION', value: 'destroy';
 					}
 				}
-			// input {
-            // 	message "Destroy?"
-            // 	ok "Yes"
-            // }
+			input {
+            	message "Destroy?"
+            	ok "Yes"
+            }
 			steps {
 
 				dir("${PROJECT_DIR}") {
