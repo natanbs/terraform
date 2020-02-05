@@ -232,7 +232,9 @@ pipeline {
 		
         always{	
 			echo '`deleting workspace'
-            deleteDir() /* clean up our workspace */
+ 			includePattern('**/.terraform')
+ 			deleteDirectories()
+            //deleteDir() /* clean up our workspace */
 			// cleanWs { // Clean workspace when done
 			// 	includePattern('**/.terraform')
 			// 	deleteDirectories()
