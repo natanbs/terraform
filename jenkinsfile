@@ -174,10 +174,10 @@ pipeline {
 						environment name: 'ACTION', value: 'destroy';
 					}
 				}
-			input {
-            	message "Destroy?"
-            	ok "Yes"
-            }
+			// input {
+            // 	message "Destroy?"
+            // 	ok "Yes"
+            // }
 			steps {
 
 				dir("${PROJECT_DIR}") {
@@ -229,11 +229,12 @@ pipeline {
   	}
   post
     {
-        // always{	
-		// cleanWs { // Clean workspace when done
-		// 	includePattern('**/.terraform')
-        //     deleteDirectories()
-        //     cleanupParameter('CLEANUP')
+        always{	
+		cleanWs { // Clean workspace when done
+			includePattern('**/.terraform')
+            deleteDirectories()
+            cleanupParameter('CLEANUP')
+		}
 		// }
         // success
         // {
