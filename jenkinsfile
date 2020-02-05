@@ -240,7 +240,7 @@ pipeline {
  			// deleteDirectories()
 			// cleanupParameter('CLEANUP')
             //deleteDir() /* clean up our workspace */
-			}
+			
 		
 		// }
 			// success
