@@ -173,7 +173,8 @@ pipeline {
                 message "Destroy?"
                 ok "Yes"
                 }
-            
+			}
+			{	
 			when { anyOf
 					{
 						environment name: 'ACTION', value: 'destroy';
