@@ -123,7 +123,8 @@ pipeline {
 									]])
 								{
 								try {
-									sh (script: "terraform workspace select $ENV_NAME || terraform workspace new $ENV_NAME")
+									sh (script: "terraform workspace select $ENV_NAME || terraform workspace new $ENV_NAME",
+									returnStdout: true)
 									tfCmd('plan', '-detailed-exitcode -out=tfplan && echo $?')
 								} catch (ex) {
 									if (ex == 2 && "${ACTION}" == 'apply') {
