@@ -126,9 +126,9 @@ pipeline {
 									//RUN_ENV = sh (script: "terraform workspace select $ENV_NAME || terraform workspace new $ENV_NAME",
 									//returnStdout: true)
 									//echo "$RUN_ENV"
-									sh "terraform workspace select $ENV_NAME || terraform workspace new $ENV_NAME"
-									sh "terraform workspace list"
-									tfCmd('plan', '-detailed-exitcode -out=tfplan && echo $?')
+									//sh "terraform workspace select $ENV_NAME || terraform workspace new $ENV_NAME"
+									sh "terraform workspace new $ENV_NAME"
+									tfCmd('plan', '-detailed-exitcode -var Environment=$"ENV_NAME" -out=tfplan && echo $?')
 								} catch (ex) {
 									if (ex == 2 && "${ACTION}" == 'apply') {
 										currentBuild.result = "UNSTABLE"
