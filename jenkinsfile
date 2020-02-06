@@ -114,6 +114,7 @@ pipeline {
 			steps {
 				dir("${PROJECT_DIR}") {
 					sh "terraform workspace select $ENV_NAME || terraform workspace new $ENV_NAME"
+					sh "terraform workspace list"
 					script {
 						wrap([$class: 'AnsiColorBuildWrapper', colorMapName: 'xterm']) {
 							withCredentials([
