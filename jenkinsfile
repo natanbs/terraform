@@ -123,11 +123,8 @@ pipeline {
 									]])
 								{
 								try {
-									//RUN_ENV = sh (script: "terraform workspace select $ENV_NAME || terraform workspace new $ENV_NAME",
-									//returnStdout: true)
-									//echo "$RUN_ENV"
-									//sh "terraform workspace select $ENV_NAME || terraform workspace new $ENV_NAME"
-									sh "terraform workspace new $ENV_NAME > /dev/null && echo $ENV_NAME created || echo $ENV_NAME exists"
+									sh "terraform workspace select $ENV_NAME || terraform workspace new $ENV_NAME" && export ENV_NAME=$"$ENV_NAME"
+									//sh "terraform workspace new $ENV_NAME > /dev/null && echo $ENV_NAME created || echo $ENV_NAME exists"
 									tfCmd('plan', '-detailed-exitcode -var Environment=$"ENV_NAME" -out=tfplan && echo $?')
 								} catch (ex) {
 									if (ex == 2 && "${ACTION}" == 'apply') {
