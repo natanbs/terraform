@@ -113,6 +113,7 @@ pipeline {
 				}
 			steps {
 				dir("${PROJECT_DIR}") {
+					sh "terraform workspace select $ENV_NAME || terraform workspace new $ENV_NAME"
 					script {
 						wrap([$class: 'AnsiColorBuildWrapper', colorMapName: 'xterm']) {
 							withCredentials([
@@ -126,7 +127,6 @@ pipeline {
 									//RUN_ENV = sh (script: "terraform workspace select $ENV_NAME || terraform workspace new $ENV_NAME",
 									//returnStdout: true)
 									//echo "$RUN_ENV"
-									sh "terraform workspace select $ENV_NAME || terraform workspace new $ENV_NAME"
 									tfCmd('plan', '-detailed-exitcode -out=tfplan && echo $?')
 								} catch (ex) {
 									if (ex == 2 && "${ACTION}" == 'apply') {
