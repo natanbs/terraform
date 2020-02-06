@@ -2,7 +2,7 @@ module "env_security_group"  {
   source  = "terraform-aws-modules/security-group/aws"
   version = "~> 3.0"
 
-  name        = "env-${var.env}-sg"
+  name        = "sg-${terraform.workspace}"
 
   description = "Security group for the environment"
   vpc_id      = module.vpc.vpc_id

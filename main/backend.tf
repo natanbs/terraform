@@ -1,8 +1,8 @@
 terraform {
   backend "s3" {
-    bucket         = "cx-terraform-state"
+    bucket         = "${terraform.workspace}-terraform-state"
     region         = "eu-central-1"
     dynamodb_table = "CXTerraformStatelock"
-    key            = "main/terraform_test.tfstate"
+    key            = "main/terraform-${terraform.workspace}.tfstate"
   }
 }

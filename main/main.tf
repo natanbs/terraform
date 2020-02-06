@@ -18,7 +18,7 @@ provider "aws" {
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "2.22.0"
-  name    = "${var.env}-vpc"
+  name    = "vpc-${terraform.workspace}"
   cidr    = var.vpc_cidr_block
 
   azs = [
@@ -33,6 +33,10 @@ module "vpc" {
   # database_subnets     = "${var.database_subnets}"
   enable_dns_hostnames = true
   enable_nat_gateway   = true
+
+  tags = {
+    Environment = "${terraform.workspace}"
+  }
 #   single_nat_gateway   = true
 
   # reuse_nat_ips        = true

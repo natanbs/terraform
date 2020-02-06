@@ -3,7 +3,7 @@
 
 module "keypair" {
   source = "mitchellh/dynamic-keys/aws"
-  name   = "var.key_name"
+  name   = "key-${terraform.workspace}"
   path   = "${path.root}/../keys"
 }
 
@@ -17,7 +17,7 @@ module "chronos_ec2" {
 
   instance_count              = "${var.instance_count}"
   key_name                    = "${module.keypair.key_name}"
-  name                        = "chronos-${var.env}"
+  name                        = "chronos-${terraform.workspace}"
   ami                         = "${var.chronos_ami_id}"
   instance_type               = "${var.chronos_instance_type}"
   subnet_id                   = tolist(module.vpc.private_subnets)[0]
@@ -30,7 +30,7 @@ module "sisense_ec2" {
   version                     = "~> 2.0"
   instance_count              = "${var.instance_count}"
   key_name                    = "${module.keypair.key_name}"
-  name                        = "sisense-${var.env}"
+  name                        = "sisense-${terraform.workspace}"
   ami                         = "${var.sisense_ami_id}"
   instance_type               = "${var.sisense_instance_type}"
   subnet_id                   = tolist(module.vpc.private_subnets)[0]

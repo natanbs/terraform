@@ -123,7 +123,8 @@ pipeline {
 									]])
 								{
 								try {
-									tfCmd('plan', '-var env=${ENV} -detailed-exitcode -out=tfplan && echo $?')
+									sh terraform workspace select $ENV_NAME || terraform workspace new $ENV_NAME
+									tfCmd('plan', '-detailed-exitcode -out=tfplan && echo $?')
 								} catch (ex) {
 									if (ex == 2 && "${ACTION}" == 'apply') {
 										currentBuild.result = "UNSTABLE"
