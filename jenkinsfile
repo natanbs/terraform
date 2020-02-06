@@ -1,5 +1,6 @@
 def tfCmd(String command, String options = '') {
-    sh ( script: "terraform workspace select $ENV_NAME || terraform workspace new $ENV_NAME && echo ${command} ${options} && cd $WORKSPACE/main && export AWS_PROFILE=${PROFILE} && export TF_ENV_profile=${PROFILE} && terraform ${command} ${options}", returnStatus: true)
+    sh ( script: "terraform workspace select $ENV_NAME || terraform workspace new $ENV_NAME", returnStatus: true)
+	sh ( script: "echo ${command} ${options} && cd $WORKSPACE/main && export AWS_PROFILE=${PROFILE} && export TF_ENV_profile=${PROFILE} && terraform ${command} ${options}", returnStatus: true)
 }
 
 pipeline {
@@ -32,7 +33,7 @@ pipeline {
 		string (name: 'PROFILE',
 			   defaultValue: 'tikal',
 			   description: 'Optional. Target aws profile defaults to cyberx')
-		string (name: 'ENV',
+		string (name: 'ENV_NAME',
 			   defaultValue: 'tf-dev',
 			   description: 'Env or Customer name')
     }
