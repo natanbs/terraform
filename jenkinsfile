@@ -181,8 +181,8 @@ pipeline {
 					}
 				}
 			steps {
-				input {
-				message "Destroy?"
+				{
+				input message "Destroy?"
 				ok "Yes"
 				}
 			// steps {
