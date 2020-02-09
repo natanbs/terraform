@@ -1,10 +1,3 @@
-// def tfWS(String command) { // TF workspace env
-// 		sh ("terraform workspace select ${ENV_NAME} || terraform workspace new ${ENV_NAME}")
-// 	}
-// TF workspace env
-// def tfWS () { 
-// 	sh "terraform workspace select ${ENV_NAME} || terraform workspace new ${ENV_NAME}", returnStatus: true
-// 	}
 def tfCmd(String command, String options = '') {
 	sh ( "terraform workspace select ${ENV_NAME} || terraform workspace new ${ENV_NAME}" )
 	sh ( script: "echo ${command} ${options} && cd $WORKSPACE/main && export AWS_PROFILE=${PROFILE} && export TF_ENV_profile=${PROFILE} && terraform ${command} ${options}", returnStatus: true)
