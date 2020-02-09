@@ -179,12 +179,12 @@ pipeline {
 					{
 						environment name: 'ACTION', value: 'destroy';
 					}
-					input {
-					message "Destroy?"
-					ok "Yes"
-					}
 				}
 			steps {
+				input {
+				message "Destroy?"
+				ok "Yes"
+				}
 				dir("${PROJECT_DIR}") {
 					script {
 						wrap([$class: 'AnsiColorBuildWrapper', colorMapName: 'xterm']) {
