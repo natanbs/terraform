@@ -244,10 +244,10 @@ pipeline {
     {
 		
         always{
-			echo 'deleting workspace'
-			dir("${env.WORKSPACE}/main/.terraform/") {
-    		        deleteDir()
-			}	
+			// echo 'deleting workspace'
+			// dir("${env.WORKSPACE}/main/.terraform/") {
+    		//         deleteDir()
+			// }	
 
 			// success
 			// {
