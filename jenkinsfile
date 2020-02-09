@@ -190,10 +190,9 @@ pipeline {
 				script {
 					def IS_APPROVED = input(
 						message: "Approve Destroy?"
-						ok: "y"
-						submitter: "admin"
+						//ok: "y"
 						parameters: [
-							string(name: 'IS_APPROVED', defaultValue: 'y', description: 'Deploy to master?')
+							string(name: 'IS_APPROVED', defaultValue: 'ok', description: 'Destroy?')
 						]
 					)
 					if (IS_APPROVED != 'y') {
