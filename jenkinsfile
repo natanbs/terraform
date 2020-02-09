@@ -1,3 +1,11 @@
+def notify(status){
+    emailext (
+      to: "natanb@tikalk.com",
+      subject: "${status}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+      body: """<p>${status}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p>
+        <p>Check console output at <a href='${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a></p>""",
+    )
+}
 def tfCmd(String command, String options = '') {
 	sh ( "cd $WORKSPACE/main && terraform workspace select ${ENV_NAME} || terraform workspace new ${ENV_NAME}" )
 	sh ( script: "echo ${command} ${options} && cd $WORKSPACE/main && export AWS_PROFILE=${PROFILE} && export TF_ENV_profile=${PROFILE} && terraform ${command} ${options}", returnStatus: true)
@@ -83,6 +91,7 @@ pipeline {
 					}
 				}
 			steps {
+				notify('Init')
 				dir("${PROJECT_DIR}") {
 					script {
 						wrap([$class: 'AnsiColorBuildWrapper', colorMapName: 'xterm']) {
@@ -231,10 +240,6 @@ pipeline {
 								{
 								try {
 									tfCmd('show','-no-color | tee show-${ENV_NAME}.txt')
-									// def tf_show = tfCmd('show','-no-color')
-									// def outfile = 'show-${ENV_NAME}.txt'
-									// def status = sh (script: "terraform show -no-color > ${outfile} 2>&1", returnStatus:true)
-									// def output = readFile(outfile).trim()
 								} catch (ex) {
                                     currentBuild.result = "UNSTABLE"
 								}
@@ -250,14 +255,14 @@ pipeline {
 			}
 		}	
   	}
-  //post
-    //{
+  post
+    {
 		
-        //always{
-			// echo 'deleting workspace'
-			// dir("${env.WORKSPACE}/main/.terraform/") {
-    		//         deleteDir()
-			// }	
+        always{
+			echo 'deleting workspace'
+			dir("${env.WORKSPACE}/main/.terraform/") {
+    		        deleteDir()
+			}	
 
 			// success
 			// {
@@ -285,6 +290,6 @@ pipeline {
 			// 	subject: "${env.JOB_NAME}-${env.BUILD_NUMBER} [$ACTION][$AWS_REGION]",
 			// 	attachLog: true
 			// 	)
-        //}
-    //}
+        }
+    }
 }
