@@ -230,7 +230,11 @@ pipeline {
 									]])
 								{
 								try {
-									tfCmd('show','-no-color | tee show-${ENV_NAME}.txt')
+									//tfCmd('show','-no-color | tee show-${ENV_NAME}.txt')
+									def tf_show = tfCmd('show','-no-color')
+									def outfile = 'show-${ENV_NAME}.txt'
+									def status = "tf-show >${outfile} 2>&1", returnStatus:true)
+									def output = readFile(outfile).trim()
 								} catch (ex) {
                                     currentBuild.result = "UNSTABLE"
 								}
