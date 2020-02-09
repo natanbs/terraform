@@ -189,7 +189,7 @@ pipeline {
 			steps {
 				script {
 					def IS_APPROVED = input(
-						message: "Approve Destroy?"
+						message: "Approve Destroy?",
 						ok: "y"
 						parameters: [
 							string(name: 'IS_APPROVED', defaultValue: 'y', description: 'Destroy?')
