@@ -1,5 +1,8 @@
 def tfCmd(String command, String options = '') {
-	sh ( script: "echo ${command} ${options} && cd $WORKSPACE/main && export AWS_PROFILE=${PROFILE} && export TF_ENV_profile=${PROFILE} && terraform workspace select ${ENV_NAME} && terraform ${command} ${options}", returnStatus: true)
+	def tfWS(String command) { // TF workspace env
+		sh ("terraform workspace select ${ENV_NAME} || terraform workspace new ${ENV_NAME}")
+	}
+	sh ( script: "echo ${command} ${options} && cd $WORKSPACE/main && export AWS_PROFILE=${PROFILE} && export TF_ENV_profile=${PROFILE} && terraform ${command} ${options}", returnStatus: true)
 }
 
 pipeline {
@@ -123,7 +126,7 @@ pipeline {
 									]])
 								{
 								try {
-									sh "terraform workspace select ${ENV_NAME} || terraform workspace new ${ENV_NAME} && export ENV_NAME=${ENV_NAME}"
+									//sh "terraform workspace select ${ENV_NAME} || terraform workspace new ${ENV_NAME} && export ENV_NAME=${ENV_NAME}"
 									//sh "terraform workspace new $ENV_NAME > /dev/null && echo $ENV_NAME created || echo $ENV_NAME exists && export ENV_NAME=${$ENV_NAME}"
 									tfCmd('plan', '-detailed-exitcode -out=tfplan && echo $?')
 								} catch (ex) {
