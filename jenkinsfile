@@ -275,6 +275,6 @@ pipeline {
 			// 	subject: "${env.JOB_NAME}-${env.BUILD_NUMBER} [$ACTION][$AWS_REGION]",
 			// 	attachLog: true
 			// 	)
-        }
+        //}
     }
 }
