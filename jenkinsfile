@@ -179,10 +179,16 @@ pipeline {
 					{
 						environment name: 'ACTION', value: 'destroy';
 					}
-				}
-					input{
-					message "Press Ok to continue"
-				}
+					def askDestroy = true
+					try{
+					input 'Destroy?'
+					}catch(e){
+					askDestroy = false
+					}
+
+					if(askDestroy){
+						println "Destroying"
+					}
 				// 	input {
 				// 	message "Destroy?"
 				// 	ok "Yes"
