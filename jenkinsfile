@@ -181,12 +181,26 @@ pipeline {
 					}
 				}
 				// if ( value == 'destroy' ){ 
-						input {
-						message "Destroy?"
-						ok "Yes"
-						}
+						// input {
+						// message "Destroy?"
+						// ok "Yes"
+						// }
 				// }
 			steps {
+				script {
+					def IS_APPROVED = input(
+						message: "Approve Destroy?"
+						ok: "y"
+						submitter: "admin"
+						parameters: [
+							string(name: 'IS_APPROVED', defaultValue: 'y', description: 'Deploy to master?')
+						]
+					)
+					if (IS_APPROVED != 'y') {
+						currentBuild.result = "ABORTED"
+						error "User cancelled"
+					}
+				}
 				dir("${PROJECT_DIR}") {
 					script {
 						wrap([$class: 'AnsiColorBuildWrapper', colorMapName: 'xterm']) {
