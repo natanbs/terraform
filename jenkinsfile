@@ -205,7 +205,7 @@ pipeline {
 			// 			}
 			// 		}
 			// 	}
-			// }
+			}
 		}
 		stage('terraform show current state') {
 			when { anyOf { environment name: 'ACTION', value: 'all';
