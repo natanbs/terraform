@@ -180,12 +180,6 @@ pipeline {
 						environment name: 'ACTION', value: 'destroy';
 					}
 				}
-				// if ( value == 'destroy' ){ 
-						// input {
-						// message "Destroy?"
-						// ok "Yes"
-						// }
-				// }
 			steps {
 				script {
 					def IS_APPROVED = input(
