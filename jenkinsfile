@@ -230,7 +230,7 @@ pipeline {
 									]])
 								{
 								try {
-									tfCmd('show','-no-color > show-${ENV_NAME}.txt')
+									tfCmd('show','-no-color | tee show-${ENV_NAME}.txt')
 								} catch (ex) {
                                     currentBuild.result = "UNSTABLE"
 								}
