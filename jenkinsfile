@@ -1,7 +1,6 @@
 def tfCmd(String command, String options = '') {
 	sh ( "cd $WORKSPACE/main && terraform workspace select ${ENV_NAME} || terraform workspace new ${ENV_NAME}" )
 	sh ( script: "echo ${command} ${options} && cd $WORKSPACE/main && export AWS_PROFILE=${PROFILE} && export TF_ENV_profile=${PROFILE} && terraform ${command} ${options}", returnStatus: true)
-	sh ( "terraform workspace list")
 }
 
 pipeline {
@@ -125,8 +124,6 @@ pipeline {
 									]])
 								{
 								try {
-									//sh "terraform workspace select ${ENV_NAME} || terraform workspace new ${ENV_NAME} && export ENV_NAME=${ENV_NAME}"
-									//sh "terraform workspace new $ENV_NAME > /dev/null && echo $ENV_NAME created || echo $ENV_NAME exists && export ENV_NAME=${$ENV_NAME}"
 									tfCmd('plan', '-detailed-exitcode -out=tfplan && echo $?')
 								} catch (ex) {
 									if (ex == 2 && "${ACTION}" == 'apply') {
@@ -182,10 +179,10 @@ pipeline {
 					{
 						environment name: 'ACTION', value: 'destroy';
 					}
-				}
-				input {
+					input {
 					message "Destroy?"
 					ok "Yes"
+					}
 				}
 			steps {
 				dir("${PROJECT_DIR}") {
