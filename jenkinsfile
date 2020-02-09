@@ -179,22 +179,11 @@ pipeline {
 					{
 						environment name: 'ACTION', value: 'destroy';
 					}
-			}
-			{
-				def askDestroy = true
-				try {
-					input 'Destroy?'
-				} catch (e) {
-					askDestroy = false
 				}
-				if (askDestroy){
-					println "Destroying"
+				input {
+				message "Destroy?"
+				ok "Yes"
 				}
-			}
-				// 	input {
-				// 	message "Destroy?"
-				// 	ok "Yes"
-				// }
 			steps {
 				dir("${PROJECT_DIR}") {
 					script {
