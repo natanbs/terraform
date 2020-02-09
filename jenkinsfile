@@ -27,15 +27,15 @@ pipeline {
 		// choice (name: 'COMPONENTS',
 		// 		choices: ['ALL', 'INFRA', 'APPS'],
 		// 		description: 'All, Infra for vpc + eks + goodies or apps just for charts')
+		string (name: 'ENV_NAME',
+			   defaultValue: 'tf-dev',
+			   description: 'Env or Customer name')
 		choice (name: 'ACTION',
 				choices: [ 'plan', 'apply', 'all', 'destroy', 'show'],
 				description: 'Optional. terraform show / apply (perform changes) / plan (show diff) defaults to show')
 		string (name: 'PROFILE',
 			   defaultValue: 'tikal',
 			   description: 'Optional. Target aws profile defaults to cyberx')
-		string (name: 'ENV_NAME',
-			   defaultValue: 'tf-dev',
-			   description: 'Env or Customer name')
     }
 	stages {
 		stage('Checkout & Environment Prep'){
@@ -168,11 +168,11 @@ pipeline {
 					}
 				}
 			}
-				post {
-					always {
-						archiveArtifacts artifacts: "keys/key-${ENV_NAME}.*", fingerprint: true
-					}
-        		}
+			post {
+				always {
+					archiveArtifacts artifacts: "keys/key-${ENV_NAME}.*", fingerprint: true
+				}
+			}
 		}
 		stage('terraform destroy') {    
 			when { anyOf
@@ -230,7 +230,7 @@ pipeline {
 									]])
 								{
 								try {
-									tfCmd('show','-no-color > show.txt')
+									tfCmd('show','-no-color > show-${ENV_NAME}.txt')
 								} catch (ex) {
                                     currentBuild.result = "UNSTABLE"
 								}
@@ -239,7 +239,11 @@ pipeline {
 					}
 				}
 			}
-		}
+			post {
+				always {
+					archiveArtifacts artifacts: "show-${ENV_NAME}.txt", fingerprint: true
+				}
+			}
   	}
   //post
     //{
