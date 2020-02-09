@@ -240,8 +240,8 @@ pipeline {
 			}
 		}
   	}
-  post
-    {
+  //post
+    //{
 		
         //always{
 			// echo 'deleting workspace'
@@ -276,5 +276,5 @@ pipeline {
 			// 	attachLog: true
 			// 	)
         //}
-    }
+    //}
 }
