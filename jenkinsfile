@@ -6,7 +6,8 @@
 // 	sh "terraform workspace select ${ENV_NAME} || terraform workspace new ${ENV_NAME}", returnStatus: true
 // 	}
 def tfCmd(String command, String options = '') {
-	sh ( script: "echo ${command} ${options} && cd $WORKSPACE/main && export AWS_PROFILE=${PROFILE} && export TF_ENV_profile=${PROFILE} && (terraform workspace select ${ENV_NAME} || terraform workspace new ${ENV_NAME}) && terraform ${command} ${options}", returnStatus: true)
+	sh ( "terraform workspace select ${ENV_NAME} || terraform workspace new ${ENV_NAME}" )
+	sh ( script: "echo ${command} ${options} && cd $WORKSPACE/main && export AWS_PROFILE=${PROFILE} && export TF_ENV_profile=${PROFILE} && terraform ${command} ${options}", returnStatus: true)
 }
 
 pipeline {
