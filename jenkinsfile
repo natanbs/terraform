@@ -180,6 +180,7 @@ pipeline {
 						environment name: 'ACTION', value: 'destroy';
 					}
 				}
+			steps {
 				input {
 				message "Destroy?"
 				ok "Yes"
