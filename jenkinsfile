@@ -180,8 +180,8 @@ pipeline {
 						environment name: 'ACTION', value: 'destroy';
 					}
 				}
+				stage{
 				if ( value == 'destroy' ){ 
-					stage {
 						input {
 						message "Destroy?"
 						ok "Yes"
