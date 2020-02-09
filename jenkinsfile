@@ -180,7 +180,7 @@ pipeline {
 						environment name: 'ACTION', value: 'destroy';
 					}
 				}
-				if ( environment name == 'ACTION') && ( value == 'destroy' ){ 
+				if ( value == 'destroy' ){ 
 					input {
 					message "Destroy?"
 					ok "Yes"
