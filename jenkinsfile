@@ -180,7 +180,7 @@ pipeline {
 						environment name: 'ACTION', value: 'destroy';
 					}
 				}
-				input message: 'Approve Destroy?', ok: 'Yes'
+				{ input message: 'Approve Destroy?', ok: 'Yes' }
 				// 	input {
 				// 	message "Destroy?"
 				// 	ok "Yes"
