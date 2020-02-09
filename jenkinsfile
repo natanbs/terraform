@@ -180,14 +180,12 @@ pipeline {
 						environment name: 'ACTION', value: 'destroy';
 					}
 				}
-				stage{
-				if ( value == 'destroy' ){ 
-						input {
-						message "Destroy?"
-						ok "Yes"
-						}
-					}
-				}
+				// if ( value == 'destroy' ){ 
+				// 		input {
+				// 		message "Destroy?"
+				// 		ok "Yes"
+				// 		}
+				// }
 			steps {
 				dir("${PROJECT_DIR}") {
 					script {
