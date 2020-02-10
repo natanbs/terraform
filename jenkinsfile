@@ -1,11 +1,11 @@
-def notify(status){
-    emailext (
-      to: "natanb@tikalk.com",
-      subject: "${status}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-      body: """<p>${status}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p>
-        <p>Check console output at <a href='${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a></p>""",
-    )
-}
+// def notify(status){
+//     emailext (
+//       to: "natanb@tikalk.com",
+//       subject: "${status}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+//       body: """<p>${status}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p>
+//         <p>Check console output at <a href='${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a></p>""",
+//     )
+// }
 def tfCmd(String command, String options = '') {
 	sh ( "cd $WORKSPACE/main && terraform workspace select ${ENV_NAME} || terraform workspace new ${ENV_NAME}" )
 	sh ( script: "echo ${command} ${options} && cd $WORKSPACE/main && export AWS_PROFILE=${PROFILE} && export TF_ENV_profile=${PROFILE} && terraform ${command} ${options}", returnStatus: true)
@@ -91,7 +91,7 @@ pipeline {
 					}
 				}
 			steps {
-				notify('Init')
+				// notify('Init')
 				dir("${PROJECT_DIR}") {
 					script {
 						wrap([$class: 'AnsiColorBuildWrapper', colorMapName: 'xterm']) {
@@ -259,8 +259,8 @@ pipeline {
 			}
 		}	
   	}
-//   post
-//     {
+  post
+    {
 		
 //         always{
 // 			echo 'deleting workspace'
@@ -277,23 +277,23 @@ pipeline {
 			//   slackSend (color: '#FF0000', message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
 			// }
 
-			//always{
-			// emailext (
-			// body: """
-			// 	<p>Jenkins Pipeline ${ACTION} Summary</p>
-			// 	<p>Jenkins url: <a href='${env.BUILD_URL}/>link</a></p>
-			// 	<p>Pipeline Blueocean： <a href='${env.JENKINS_URL}blue/organizations/jenkins/${env.JOB_NAME}/detail/${env.JOB_NAME}/${env.BUILD_NUMBER}/pipeline'>${env.JOB_NAME}(pipeline page)</a></p>
-			// 	<ul>
-			// 	<li> Branch built: '${env.BRANCH_NAME}' </li>
-			// 	<li> ACTION: $ACTION</li>
-			// 	<li> REGION: ${AWS_REGION}</li>
-			// 	</ul>
-			// 	""",
-			// 	recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
-			// 	to: "natanb@tikalk.com",
-			// 	subject: "${env.JOB_NAME}-${env.BUILD_NUMBER} [$ACTION][$AWS_REGION]",
-			// 	attachLog: true
-			// 	)
-    //     }
-    // }
+			always{
+			emailext (
+			body: """
+				<p>Jenkins Pipeline ${ACTION} Summary</p>
+				<p>Jenkins url: <a href='${env.BUILD_URL}/>link</a></p>
+				<p>Pipeline Blueocean： <a href='${env.JENKINS_URL}blue/organizations/jenkins/${env.JOB_NAME}/detail/${env.JOB_NAME}/${env.BUILD_NUMBER}/pipeline'>${env.JOB_NAME}(pipeline page)</a></p>
+				<ul>
+				<li> Branch built: '${env.BRANCH_NAME}' </li>
+				<li> ACTION: $ACTION</li>
+				<li> REGION: ${AWS_REGION}</li>
+				</ul>
+				""",
+				recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
+				to: "natanb@tikalk.com",
+				subject: "${env.JOB_NAME}-${env.BUILD_NUMBER} [$ACTION][$AWS_REGION]",
+				attachLog: true
+				)
+        }
+    }
 }
