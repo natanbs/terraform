@@ -1,11 +1,3 @@
-// def notify(status){
-//     emailext (
-//       to: "natanb@tikalk.com",
-//       subject: "${status}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-//       body: """<p>${status}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p>
-//         <p>Check console output at <a href='${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a></p>""",
-//     )
-// }
 def tfCmd(String command, String options = '') {
 	sh ( "cd $WORKSPACE/main && terraform workspace select ${ENV_NAME} || terraform workspace new ${ENV_NAME}" )
 	sh ( script: "echo ${command} ${options} && cd $WORKSPACE/main && export AWS_PROFILE=${PROFILE} && export TF_ENV_profile=${PROFILE} && terraform ${command} ${options}", returnStatus: true)
@@ -44,6 +36,9 @@ pipeline {
 		string (name: 'PROFILE',
 			   defaultValue: 'tikal',
 			   description: 'Optional. Target aws profile defaults to cyberx')
+		string (name: 'EMAIL',
+			   defaultValue: 'natanb@tikalk.com',
+			   description: 'Optional. Email notification')
     }
 	stages {
 		stage('Checkout & Environment Prep'){
@@ -91,7 +86,6 @@ pipeline {
 					}
 				}
 			steps {
-				// notify('Init')
 				dir("${PROJECT_DIR}") {
 					script {
 						wrap([$class: 'AnsiColorBuildWrapper', colorMapName: 'xterm']) {
@@ -290,7 +284,7 @@ pipeline {
 				</ul>
 				""",
 				recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
-				to: "natanb@tikalk.com",
+				to: "${EMAIL}",
 				subject: "${env.JOB_NAME}-${env.BUILD_NUMBER} [$ACTION][$AWS_REGION]",
 				attachLog: true
 				)
