@@ -250,14 +250,14 @@ pipeline {
 			}
 		}	
   	}
-  post
-    {
+//   post
+//     {
 		
-        always{
-			echo 'deleting workspace'
-			dir("${env.WORKSPACE}/main/.terraform/") {
-    		        deleteDir()
-			}	
+//         always{
+// 			echo 'deleting workspace'
+// 			dir("${env.WORKSPACE}/main/.terraform/") {
+//     		        deleteDir()
+// 			}	
 
 			// success
 			// {
@@ -285,6 +285,6 @@ pipeline {
 			// 	subject: "${env.JOB_NAME}-${env.BUILD_NUMBER} [$ACTION][$AWS_REGION]",
 			// 	attachLog: true
 			// 	)
-        }
-    }
+    //     }
+    // }
 }
