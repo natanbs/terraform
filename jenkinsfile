@@ -83,7 +83,6 @@ pipeline {
 					}
 				}
 			steps {
-				notify('Init')
 				dir("${PROJECT_DIR}") {
 					script {
 						wrap([$class: 'AnsiColorBuildWrapper', colorMapName: 'xterm']) {
