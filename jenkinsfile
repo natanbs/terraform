@@ -7,11 +7,11 @@ pipeline {
   agent { node { label 'collectors-slave' } }
 
 	environment {
-				AWS_DEFAULT_REGION = "${params.AWS_REGION}"
-				PROFILE = "${params.PROFILE}"
-				ACTION = "${params.ACTION}"
-				PROJECT_DIR = "terraform/main"
-				// COMPONENTS = "${params.COMPONENTS}"
+		AWS_DEFAULT_REGION = "${params.AWS_REGION}"
+		PROFILE = "${params.PROFILE}"
+		ACTION = "${params.ACTION}"
+		PROJECT_DIR = "terraform/main"
+		// COMPONENTS = "${params.COMPONENTS}"
   }
 	options {
         buildDiscarder(logRotator(numToKeepStr: '30'))
@@ -55,18 +55,18 @@ pipeline {
 							try {
 								echo "Setting up Terraform"
 								def tfHome = tool name: 'terraform-0.12.20',
-													type: 'org.jenkinsci.plugins.terraform.TerraformInstallation'
-													env.PATH = "${tfHome}:${env.PATH}"
-								currentBuild.displayName += "[$AWS_REGION]::[$ACTION]"
-								sh("""
-								/usr/local/bin/aws configure --profile ${PROFILE} set aws_access_key_id ${AWS_ACCESS_KEY_ID}
-								/usr/local/bin/aws configure --profile ${PROFILE} set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}
-								/usr/local/bin/aws configure --profile ${PROFILE} set region ${AWS_REGION}
-								export AWS_PROFILE=${PROFILE}
-								export TF_ENV_profile=${PROFILE}
-								mkdir -p /home/jenkins/.terraform.d/plugins/linux_amd64
-								""")
-								tfCmd('version')
+									type: 'org.jenkinsci.plugins.terraform.TerraformInstallation'
+									env.PATH = "${tfHome}:${env.PATH}"
+									currentBuild.displayName += "[$AWS_REGION]::[$ACTION]"
+									sh("""
+										/usr/local/bin/aws configure --profile ${PROFILE} set aws_access_key_id ${AWS_ACCESS_KEY_ID}
+										/usr/local/bin/aws configure --profile ${PROFILE} set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}
+										/usr/local/bin/aws configure --profile ${PROFILE} set region ${AWS_REGION}
+										export AWS_PROFILE=${PROFILE}
+										export TF_ENV_profile=${PROFILE}
+										mkdir -p /home/jenkins/.terraform.d/plugins/linux_amd64
+									""")
+									tfCmd('version')
 							} catch (ex) {
                                                                 echo 'Err: Incremental Build failed with Error: ' + ex.toString()
 								currentBuild.result = "UNSTABLE"
@@ -234,10 +234,6 @@ pipeline {
 								{
 								try {
 									tfCmd('show','-no-color | tee show-${ENV_NAME}.txt')
-									// def tf_show = tfCmd('show','-no-color')
-									// def outfile = 'show-${ENV_NAME}.txt'
-									// def status = sh (script: "terraform show -no-color > ${outfile} 2>&1", returnStatus:true)
-									// def output = readFile(outfile).trim()
 								} catch (ex) {
                                     currentBuild.result = "UNSTABLE"
 								}
